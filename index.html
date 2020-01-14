@@ -12,21 +12,70 @@
 </head>
 
 <body>
-    <h1>Attack of the Clones</h1>
-    <div id="stormtrooper[1]">
-        <p id="stormtrooper-name[1]">Name 1</p>
-        <input class="stormtrooper-name-input[1]">
-        <button id="stormtroope-add[1]">Add</button>
-        <button id="stormtroope-remove[1]">Remove</button>
+    <div id="clones">
+        <h1>Attack of the Clones</h1>
+        <div id="stormtrooper[1]">
+            <p id="stormtrooper-name[1]">Name 1</p>
+            <input id="stormtrooper-name-input[1]">
+            <button id="stormtroope-remove[1]">Remove</button>
+        </div>
     </div>
+    <button id="stormtroope-add">Add</button>
 </body>
-
+<!-- https://javascript.info/modifying-document -->
 <script>
+    let howManyClonesOnPage = 1;
     init();
 
     function init() {
         document.getElementById("stormtroope-remove[1]").style.display = "none";
+        document.getElementById("stormtroope-remove[1]").addEventListener("click", removeElementHTML);
+        document.getElementById("stormtrooper-name-input[1]").addEventListener('change', check)
+
+        document.getElementById("stormtroope-add").addEventListener("click", cloneElementHTML);
     }
+
+    function cloneElementHTML () {
+        let original = document.getElementById("stormtrooper[1]")
+        let origin = document.getElementById("clones")
+        howManyClonesOnPage++; 
+
+        let clone = original.cloneNode(true);
+        
+        clone.id = clone.id.replace("[1]", "[" + howManyClonesOnPage + "]")
+        clone.querySelectorAll("input, [id$='[1]']").forEach(v => {
+            v.className = v.className.replace("[1]", "["+howManyClonesOnPage+"]")
+            v.id = v.id.replace("[1]", "["+howManyClonesOnPage+"]")
+            v.innerHTML = v.innerHTML.replace("1", howManyClonesOnPage)
+        })
+
+        clone.querySelectorAll("input").forEach(v => {
+            v.value = ''
+        })
+        
+        origin.append(clone);
+
+        origin.querySelectorAll("[id^='stormtroope-remove']").forEach(v => {
+            v.style.display = "inline-block"
+        })
+
+        document.querySelectorAll("[id^='stormtroope-remove']").forEach(v => {
+            v.addEventListener('click', removeElementHTML)
+        });
+
+        document.getElementById("stormtrooper-name-input["+howManyClonesOnPage+"]").addEventListener('change', check)
+    }
+
+    function removeElementHTML() {
+        console.log(this.id)
+        elToRemove = document.getElementById(this.id)
+        elToRemove.remove()
+    }
+
+    function check() {
+        console.log(this.id)
+    }
+
 </script>
 
 </html>
