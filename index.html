@@ -20,7 +20,7 @@
         </div>
         <div id="counterNext">
             <p>Number of Clones Next</p>
-            <input id="howMayClones" value=1>
+            <input id="howManyClones" value=1>
         </div>
         <div id="stormtrooper[0]">
             <p id="stormtrooper-name[0]">Name 0</p>
@@ -32,41 +32,40 @@
 </body>
 <!-- https://javascript.info/modifying-document -->
 <script>
+    var patternNumberWithSquareBrackets = /\[[0-9]+\]/g //[number]
+    var patternNumber = /[0-9]+/g //[number]
+
     init();
 
     function init() {
         document.getElementById("stormtroope-remove[0]").style.display = "none";
-        document.getElementById("stormtroope-remove[0]").addEventListener("click", removeElementHTML);
+        document.getElementById("stormtroope-remove[0]").addEventListener("click", removeStormtrooper);
         document.getElementById("stormtrooper-name-input[0]").addEventListener('change', check)
-        document.getElementById("howMayClones").addEventListener('change', addManyClones)
+        document.getElementById("howManyClones").addEventListener('change', addManyClones)
 
-        document.getElementById("stormtroope-add").addEventListener("click", cloneElementHTML);
+        document.getElementById("stormtroope-add").addEventListener("click", cloneStormtrooper);
     }
 
     function addManyClones() {
         let clonesOnPage = document.getElementById("howManyClonesOnPage").value;
-        let clonesOnPageAfter = Number(document.getElementById("howMayClones").value) - Number(clonesOnPage);
-
-        if (Number(document.getElementById("howMayClones").value) < 1)
-            return;
+        let clonesOnPageAfter = Number(document.getElementById("howManyClones").value) - Number(clonesOnPage);      
         
         if (clonesOnPageAfter > 0) {
-            console.log("Dodaje klony")
-            for (let i = 0; i < clonesOnPageAfter; i++)
-                cloneElementHTML()
+            for (let i = 0; i < clonesOnPageAfter; i++) {
+                cloneStormtrooper()
+            }
+            document.getElementById("howManyClones").value = document.getElementById("howManyClonesOnPage").value;
         } else if (clonesOnPageAfter < 0) {
-            console.log(clonesOnPageAfter)
-            console.log("Trzeba usunac")
+            removeSomeStormtroopers(clonesOnPageAfter*(-1))
         }
             
     }
 
     function changeCloneId(element, newId) {
-        element.id = element.id.replace("0", "" + newId + "")
-        element.querySelectorAll("[id^='stormtroope']").forEach(v => {
-            str = v.id.substring( v.id.lastIndexOf("[")+1, v.id.lastIndexOf("]"))
-            v.id = v.id.replace(str, newId)
-            v.innerHTML = v.innerHTML.replace("0", (newId))
+        element.id = element.id.replace(patternNumberWithSquareBrackets, "[" + newId + "]")
+        element.querySelectorAll("*").forEach(v => {
+            v.id = v.id.replace(patternNumberWithSquareBrackets, "[" + newId + "]")
+            v.innerHTML = v.innerHTML.replace(patternNumber, newId)
         })
         element.querySelectorAll("input").forEach(v => {
             v.value = ''
@@ -74,35 +73,48 @@
         })
     }
 
-    function cloneElementHTML () {
-        let original = document.getElementById("stormtrooper[0]")
-        let origin = document.getElementById("clones")
+    function cloneStormtrooper () {
+        let original = document.getElementById("stormtrooper[0]");
+        let origin = document.getElementById("clones");
         let clonesOnPage = document.getElementById("howManyClonesOnPage").value++;
+        document.getElementById("howManyClones").value++;
 
         let clone = original.cloneNode(true);
-        changeCloneId (clone, clonesOnPage)
+        changeCloneId(clone, clonesOnPage);
         origin.append(clone);
 
         origin.querySelectorAll("[id^='stormtroope-remove']").forEach(v => {
-            v.style.display = "inline-block"
-            v.addEventListener("click", removeElementHTML);
+            v.style.display = "inline-block";
+            v.addEventListener("click", removeStormtrooper);
         })
     }
 
-    function removeElementHTML() {
-        idToRemove = this.id.substring(this.id.lastIndexOf("[") + 1, this.id.lastIndexOf("]"))
-        var el = document.getElementById("stormtrooper["+idToRemove+"]");
+    function removeSomeStormtroopers(numberOfClones) {
+        let clonesOnPage = document.getElementById("howManyClonesOnPage").value
+        for (let i = clonesOnPage-1; i > clonesOnPage-numberOfClones-1; i--) {
+            let element = document.getElementById("stormtrooper[" + i + "]");
+            element.remove();
+        }
+        document.getElementById("howManyClonesOnPage").value = clonesOnPage - numberOfClones
+    }
+
+    function removeStormtrooper() {
+        let idToRemove = this.id.match(patternNumber)
+        let element = document.getElementById("stormtrooper["+idToRemove+"]");
         let clonesOnPage = document.getElementById("howManyClonesOnPage").value--;
-        el.remove()
+        element.remove()
         for (let i = Number(idToRemove)+1; i < clonesOnPage; i++) {
-            console.log(i)
-            el = document.getElementById("stormtrooper[" + i + "]");
-            el.id = el.id.replace(i.toString(), (i-1).toString())
+            element = document.getElementById("stormtrooper[" + i + "]");
+            element.id = element.id.replace(patternNumberWithSquareBrackets, "[" + (i - 1) + "]")
+            element.querySelectorAll("*").forEach(v => {
+                v.id = v.id.replace(patternNumberWithSquareBrackets, "[" + (i-1) + "]")
+                v.innerHTML = v.innerHTML.replace(patternNumber, (i-1))
+            })
         }
     }
 
     function check() {
-       console.log(this.id)
+    //    console.log(this.id)
     }
 
 </script>
