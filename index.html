@@ -5,64 +5,68 @@
 <head>
     <meta charset="utf-8">
     <title>Attack of the Clones</title>
-    <meta name="description" content="slider with pure js">
+    <meta name="description" content="Attack of the Clones - js">
     <meta name="author" content="Mariusz Najwer">
-    <script src="https://kit.fontawesome.com/084a192b8b.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div id="clones">
-        <h1>Attack of the Clones</h1>
-        <div id="counter">
-            <p>Number of Clones</p>
-            <input id="howManyClonesOnPage" value=1>
+    <main>
+        <div id="clones">
+            <h1>A long time ago in a galaxy far, far away....</h1>
+            <h3>Star Wars Episode II: Attack of the Clones (with JavaScript)</h3>
+            <p>There is unrest in the Galactic Senate. Several thousand solar systems have declared their intentions to leave the Republic. <br>
+            This Separatist movement, under the leadership of the mysterious Count Dooku, has made it difficult for the limited number <br>
+            of Jedi Knights to maintain peace and order in the galaxy. Senator Amidala, the former Queen of Naboo, is returning to the <br>
+            Galactic Senate to vote on the critical issue of creating an ARMY OF THE REPUBLIC to assist the overwhelmed Jedi....</p>
+            <div id="counter">
+                <p>Number of Clones</p>
+                <input id="howManyClonesOnThePage" value=1>
+            </div>
+            <div id="counterUser">
+                <p><b>Type Number Of Clones</b></p>
+                <input id="howManyClonesFromUser" value=1>
+            </div>
+            <div id="stormtrooper[0]">
+                <p id="stormtrooper-name[0]">Clone 0. Name your clone! </p>
+                <input id="stormtrooper-name-input[0]">
+                <button id="stormtroope-remove[0]">Remove clone </button>
+            </div>
         </div>
-        <div id="counterNext">
-            <p>Type Number Of Clones</p>
-            <input id="howManyClones" value=1>
-        </div>
-        <div id="stormtrooper[0]">
-            <p id="stormtrooper-name[0]">Name Clone 0</p>
-            <input id="stormtrooper-name-input[0]">
-            <button id="stormtroope-remove[0]">Remove</button>
-        </div>
-    </div>
-    <button id="stormtroope-add">Add</button>
+        </br> <!-- dont do it -->
+        <button id="stormtroope-add">Add clone</button>
+    </main>
 </body>
-<!-- https://javascript.info/modifying-document -->
+
 <script>
-    var patternNumberWithSquareBrackets = /\[[0-9]+\]/g //[number]
-    var patternNumber = /[0-9]+/g //[number]
+    let patternNumberWithSquareBrackets = /\[[0-9]+\]/g //[number]
+    let patternNumber = /[0-9]+/g //[number]
 
-    init();
-
-    function init() {
+    init = () => {
         document.getElementById("counter").style.display = "none"
         document.getElementById("stormtroope-remove[0]").style.display = "none";
         document.getElementById("stormtroope-remove[0]").addEventListener("click", removeStormtrooper);
         document.getElementById("stormtrooper-name-input[0]").addEventListener('change', check)
-        document.getElementById("howManyClones").addEventListener('change', addManyClones)
+        document.getElementById("howManyClonesFromUser").addEventListener('change', addManyClones)
 
         document.getElementById("stormtroope-add").addEventListener("click", cloneStormtrooper);
     }
 
-    function addManyClones() {
-        let clonesOnPage = document.getElementById("howManyClonesOnPage").value;
-        if (Number(document.getElementById("howManyClones").value) <= 0) {
-            document.getElementById("howManyClones").value = 1
+    addManyClones = () => {
+        let clonesOnPage = document.getElementById("howManyClonesOnThePage").value;
+        if (Number(document.getElementById("howManyClonesFromUser").value) <= 0) {
+            document.getElementById("howManyClonesFromUser").value = 1
         } 
 
-        if (Number(document.getElementById("howManyClones").value) > 20) {
-            document.getElementById("howManyClones").value = 1
+        if (Number(document.getElementById("howManyClonesFromUser").value) > 20) {
+            document.getElementById("howManyClonesFromUser").value = 1
         } 
         
-        let clonesOnPageAfter = Number(document.getElementById("howManyClones").value) - Number(clonesOnPage);      
+        let clonesOnPageAfter = Number(document.getElementById("howManyClonesFromUser").value) - Number(clonesOnPage);      
         if (clonesOnPageAfter > 0) {
             for (let i = 0; i < clonesOnPageAfter; i++) {
                 cloneStormtrooper()
             }
-            document.getElementById("howManyClones").value = document.getElementById("howManyClonesOnPage").value;
+            document.getElementById("howManyClonesFromUser").value = document.getElementById("howManyClonesOnThePage").value;
         } 
         
         if (clonesOnPageAfter < 0) {
@@ -71,7 +75,7 @@
             
     }
 
-    function changeCloneId(element, newId) {
+    changeCloneId = (element, newId) => {
         element.id = element.id.replace(patternNumberWithSquareBrackets, "[" + newId + "]")
         element.querySelectorAll("*").forEach(v => {
             v.id = v.id.replace(patternNumberWithSquareBrackets, "[" + newId + "]")
@@ -83,30 +87,30 @@
         })
     }
 
-    function cloneStormtrooper () {
-        let original = document.getElementById("stormtrooper[0]");
-        let origin = document.getElementById("clones");
-        let clonesOnPage = document.getElementById("howManyClonesOnPage").value++;
-        document.getElementById("howManyClones").value++;
+    cloneStormtrooper = () => {
+        let originalChild = document.getElementById("stormtrooper[0]");
+        let originalParent = document.getElementById("clones");
+        let clonesOnPage = document.getElementById("howManyClonesOnThePage").value++;
+        document.getElementById("howManyClonesFromUser").value++;
 
-        let clone = original.cloneNode(true);
+        let clone = originalChild.cloneNode(true);
         changeCloneId(clone, clonesOnPage);
-        origin.append(clone);
+        originalParent.append(clone);
 
-        origin.querySelectorAll("[id^='stormtroope-remove']").forEach(v => {
+        originalParent.querySelectorAll("[id^='stormtroope-remove']").forEach(v => {
             v.style.display = "inline-block";
             v.addEventListener("click", removeStormtrooper);
         })
     }
 
     function removeSomeStormtroopers(numberOfClones) {
-        let clonesOnPage = document.getElementById("howManyClonesOnPage").value
+        let clonesOnPage = document.getElementById("howManyClonesOnThePage").value
         for (let i = clonesOnPage-1; i > clonesOnPage-numberOfClones-1; i--) {
             let element = document.getElementById("stormtrooper[" + i + "]");
             element.remove();
         }
         clonesOnPage = clonesOnPage - numberOfClones;
-        document.getElementById("howManyClonesOnPage").value = clonesOnPage
+        document.getElementById("howManyClonesOnThePage").value = clonesOnPage
         if (clonesOnPage == 1)
             document.getElementById("stormtroope-remove[0]").style.display = "none"; 
     }
@@ -114,8 +118,8 @@
     function removeStormtrooper() {
         let idToRemove = this.id.match(patternNumber)
         let element = document.getElementById("stormtrooper["+idToRemove+"]");
-        let clonesOnPage = --document.getElementById("howManyClonesOnPage").value;
-        document.getElementById("howManyClones").value--;
+        let clonesOnPage = --document.getElementById("howManyClonesOnThePage").value;
+        document.getElementById("howManyClonesFromUser").value--;
         element.remove()
         for (let i = Number(idToRemove)+1; i <= clonesOnPage; i++) {
             element = document.getElementById("stormtrooper[" + i + "]");
@@ -130,8 +134,10 @@
     }
 
     function check() {
-    //    console.log(this.id)
+       console.log("To ja twój klon! #"+this.id+"")
     }
+
+    init();
 
 </script>
 
